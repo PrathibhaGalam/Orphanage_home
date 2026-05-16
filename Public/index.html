@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Help Nearby — Orphanages & Old Age Homes</title>
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet Map Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+    <link rel="stylesheet" href="CSS/buttons.css" />
+    <link rel="stylesheet" href="CSS/backgroundimg.css" />
+    <link rel="stylesheet" href="CSS/homepage.css" />
+    <link rel="stylesheet" href="CSS/map.css" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="index.html">HelpNearby</a>
+            <nav class="main-nav">
+                <a href="about.html">About</a>
+                <a href="locations.html">Locations</a>
+                <a href="our-services.html">Services</a>
+                <a href="query.html">Contact</a>
+            </nav>
+            <div class="actions">
+                <button class="btn ghost" id="openLogin">Login</button>
+                <button class="btn primary" id="openRegister">Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="overlay container hero-inner">
+                <div class="hero-text">
+                    <h1>Find Orphanages & Old Age Homes Near You</h1>
+                    <p>
+                        Connect people willing to help with verified homes that need donations,
+                        volunteers, and supplies.
+                    </p>
+                </div>
+
+                <div class="hero-search">
+                    <input id="searchInput" type="search" placeholder="Search by city, name or needs (e.g. food, beds)" />
+                    <button class="btn primary" id="searchBtn">Find Nearby</button>
+                    <button class="btn" id="geoBtn" title="Use my location">Use my location</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="container intro">
+            <div class="intro-grid">
+                <div>
+                    <h2>Register Your Home</h2>
+                    <p>
+                        If you run an orphanage or old age home, register your facility so helpers
+                        nearby can find and support you. Provide proof and photos for verification.
+                    </p>
+                    <button id="openHomeRegister" class="btn primary">Register Now</button>
+                </div>
+                <div>
+                    <h2>Host a Giving Day</h2>
+                    <p>
+                        Plan a visit or donate on special occasions. Find homes by area and check
+                        whether they accept volunteers, in-kind donations or online payments.
+                    </p>
+                    <a class="btn" href="#listings">Browse Homes</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="listings" class="container listings">
+            <h2>Featured Homes Near You</h2>
+            <div class="cards" id="cards">
+                <!-- sample cards; JS will filter/search them -->
+                <article class="card" data-city="New York" data-needs="food,clothes" data-distance="2">
+                    <img src="images/orphanimg.svg" alt="Sample home image" />
+                    <div class="card-body">
+                        <h3>Sunrise Orphanage</h3>
+                        <p class="muted">New York, USA — 2 km</p>
+                        <p class="needs"><strong>Needs:</strong> food, clothing, volunteers</p>
+                        <div class="card-actions">
+                            <a class="btn" href="#details">View</a>
+                            <a class="btn primary" href="#donate">Donate</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card" data-city="London" data-needs="beds,medicine" data-distance="12">
+                    <img src="images/orphanimg.svg" alt="Sample home image" />
+                    <div class="card-body">
+                        <h3>Riverside Care Home</h3>
+                        <p class="muted">London, UK — 12 km</p>
+                        <p class="needs"><strong>Needs:</strong> beds, medicines</p>
+                        <div class="card-actions">
+                            <a class="btn" href="#details">View</a>
+                            <a class="btn primary" href="#donate">Donate</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card" data-city="Mumbai" data-needs="volunteers,food" data-distance="20">
+                    <img src="images/orphanimg.svg" alt="Sample home image" />
+                    <div class="card-body">
+                        <h3>Hope Children's Home</h3>
+                        <p class="muted">Mumbai, India — 20 km</p>
+                        <p class="needs"><strong>Needs:</strong> volunteers, food</p>
+                        <div class="card-actions">
+                            <a class="btn" href="#details">View</a>
+                            <a class="btn primary" href="#donate">Donate</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; 2026 HelpNearby — Connecting Helpers with Homes</p>
+            <nav class="footer-nav">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- Login / Register Modals -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-panel">
+            <button class="modal-close" id="closeModal">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="JS/main.js"></script>
+</body>
+</html>

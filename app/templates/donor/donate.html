@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Make a Donation - {{ orphanage.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="card-title mb-4">Make a Donation to {{ orphanage.name }}</h3>
+                
+                <form method="POST" novalidate>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Donation Amount (₹) *</label>
+                        <input type="number" class="form-control" id="amount" name="amount" step="100" min="100" required>
+                        <small class="text-muted">Minimum: ₹100</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="donation_type" class="form-label">Donation Type *</label>
+                        <select class="form-select" id="donation_type" name="donation_type" required>
+                            <option value="monetary">Monetary Donation</option>
+                            <option value="material">Material Donation</option>
+                            <option value="service">Service</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="payment_method" class="form-label">Payment Method *</label>
+                        <select class="form-select" id="payment_method" name="payment_method" required>
+                            <option value="card">Credit/Debit Card</option>
+                            <option value="bank">Bank Transfer</option>
+                            <option value="upi">UPI</option>
+                            <option value="cash">Cash</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description/Notes</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Any specific purpose or message..."></textarea>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Note:</strong> A donation receipt will be issued for tax purposes.
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">Proceed to Donation</button>
+                        <a href="{{ url_for('donor.orphanage_detail', id=orphanage.id) }}" class="btn btn-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

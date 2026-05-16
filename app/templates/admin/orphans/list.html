@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Orphans List - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Manage Orphans</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('admin.create_orphan') }}" class="btn btn-success">+ Add New Orphan</a>
+    </div>
+</div>
+
+{% if orphans %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Orphanage</th>
+                    <th>Health Status</th>
+                    <th>Education Level</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for orphan in orphans %}
+                    {% set age = ((now.date() - orphan.date_of_birth).days // 365) %}
+                    <tr>
+                        <td><strong>{{ orphan.name }}</strong></td>
+                        <td>{{ age }} years</td>
+                        <td>{{ orphan.gender.capitalize() }}</td>
+                        <td>{{ orphan.orphanage.name }}</td>
+                        <td>{{ orphan.health_status or 'N/A' }}</td>
+                        <td>{{ orphan.education_level or 'N/A' }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.edit_orphan', id=orphan.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                            <form method="POST" action="{{ url_for('admin.delete_orphan', id=orphan.id) }}" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this record?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        No orphans found. <a href="{{ url_for('admin.create_orphan') }}">Add the first record</a>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block js %}
+<script>
+    var now = new Date();
+</script>
+{% endblock %}

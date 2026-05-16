@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orphanage Locations — HelpNearby</title>
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet Map Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+    <link rel="stylesheet" href="CSS/buttons.css" />
+    <link rel="stylesheet" href="CSS/backgroundimg.css" />
+    <link rel="stylesheet" href="CSS/homepage.css" />
+    <link rel="stylesheet" href="CSS/map.css" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="index.html">HelpNearby</a>
+            <nav class="main-nav">
+                <a href="about.html">About</a>
+                <a href="locations.html">Locations</a>
+                <a href="our-services.html">Services</a>
+                <a href="query.html">Contact</a>
+            </nav>
+            <div class="actions">
+                <button class="btn ghost" id="openLogin">Login</button>
+                <button class="btn primary" id="openRegister">Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="locations">
+            <h2>Orphanages & Homes Worldwide</h2>
+            <p>Explore our network of orphanages and care homes across the globe. Click on any marker to see more details and support opportunities.</p>
+            
+            <div class="search-bar">
+                <input type="text" id="locationSearch" placeholder="Search by orphanage name or city..." />
+                <button id="locationSearchBtn" class="btn primary">Search</button>
+                <button id="locationClearBtn" class="btn ghost">Clear</button>
+            </div>
+            
+            <div id="map" style="width: 100%; height: 600px; border-radius: 12px; margin-top: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);"></div>
+            
+            <div class="map-info">
+                <h3>How to Help</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>🔍 Explore</h4>
+                        <p>Use the map to find orphanages and care homes near you or anywhere in the world.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>💝 Support</h4>
+                        <p>Click on a location to learn about their needs and how you can help locally or globally.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>🤝 Connect</h4>
+                        <p>Register as a volunteer, make donations, or provide supplies to support these communities.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; 2026 HelpNearby — Connecting Helpers with Homes</p>
+            <nav class="footer-nav">
+                <a href="about.html">About</a>
+                <a href="locations.html">Locations</a>
+                <a href="our-services.html">Services</a>
+                <a href="query.html">Contact</a>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- Login / Register Modals -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-panel">
+            <button class="modal-close" id="closeModal">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="JS/main.js"></script>
+    <script>
+        // Initialize map on this page
+        let map;
+        let markers = {}; // Store markers by home id
+        let allHomes = [];
+        
+        function initLocationMap(){
+            if(document.getElementById('map')){
+                map = L.map('map').setView([20, 0], 2);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(map);
+                
+                // Load homes from storage and add markers
+                allHomes = JSON.parse(localStorage.getItem('hn_homes') || '[]');
+                allHomes.forEach(home => {
+                    if(home.lat && home.lng){
+                        const marker = L.marker([home.lat, home.lng]).addTo(map);
+                        const popupText = `<strong>${home.name}</strong><br/>${home.city}, ${home.country}<br/><small><strong>Needs:</strong> ${home.needs}</small><br/><small><strong>Phone:</strong> ${home.phone}</small>`;
+                        marker.bindPopup(popupText);
+                        markers[home.id] = marker;
+                    }
+                });
+                
+                // Fit bounds if homes exist
+                const validHomes = allHomes.filter(h => h.lat && h.lng);
+                if(validHomes.length > 0){
+                    const bounds = L.latLngBounds(validHomes.map(h => [h.lat, h.lng]));
+                    if(bounds.isValid()) map.fitBounds(bounds.pad(0.1));
+                }
+            }
+        }
+        
+        function searchLocations(){
+            const query = document.getElementById('locationSearch').value.trim().toLowerCase();
+            
+            if(query === ''){
+                // Show all markers
+                Object.keys(markers).forEach(id => markers[id].setOpacity(1));
+                const validHomes = allHomes.filter(h => h.lat && h.lng);
+                if(validHomes.length > 0){
+                    const bounds = L.latLngBounds(validHomes.map(h => [h.lat, h.lng]));
+                    if(bounds.isValid() && map) map.fitBounds(bounds.pad(0.1));
+                }
+                return;
+            }
+            
+            // Filter homes based on search
+            const filteredHomes = allHomes.filter(home => {
+                const nameMatch = (home.name || '').toLowerCase().includes(query);
+                const cityMatch = (home.city || '').toLowerCase().includes(query);
+                const countryMatch = (home.country || '').toLowerCase().includes(query);
+                return nameMatch || cityMatch || countryMatch;
+            });
+            
+            // Hide all markers first
+            Object.keys(markers).forEach(id => markers[id].setOpacity(0.2));
+            
+            // Show only matching markers
+            filteredHomes.forEach(home => {
+                if(markers[home.id]) markers[home.id].setOpacity(1);
+            });
+            
+            // Fit bounds to matching locations
+            if(filteredHomes.length > 0){
+                const validFiltered = filteredHomes.filter(h => h.lat && h.lng);
+                if(validFiltered.length > 0){
+                    const bounds = L.latLngBounds(validFiltered.map(h => [h.lat, h.lng]));
+                    if(bounds.isValid() && map) map.fitBounds(bounds.pad(0.2));
+                }
+            }
+        }
+        
+        function clearSearch(){
+            document.getElementById('locationSearch').value = '';
+            searchLocations();
+        }
+        
+        window.addEventListener('load', () => {
+            initLocationMap();
+            document.getElementById('locationSearchBtn').addEventListener('click', searchLocations);
+            document.getElementById('locationClearBtn').addEventListener('click', clearSearch);
+            document.getElementById('locationSearch').addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') searchLocations();
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Orphanage Management System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="card-title mb-4">User Profile</h3>
+                
+                <div class="mb-3">
+                    <label class="form-label"><strong>Username:</strong></label>
+                    <p>{{ user.username }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label"><strong>Email:</strong></label>
+                    <p>{{ user.email }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label"><strong>Role:</strong></label>
+                    <p>{{ user.role.capitalize() }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label"><strong>Member Since:</strong></label>
+                    <p>{{ user.created_at.strftime('%B %d, %Y') }}</p>
+                </div>
+                
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

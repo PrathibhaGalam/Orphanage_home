@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Orphanages - Donor Portal{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Browse Orphanages</h2>
+
+<div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+    {% if orphanages.items %}
+        {% for orphanage in orphanages.items %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ orphanage.name }}</h5>
+                        <p class="card-text text-muted">{{ orphanage.city }}, {{ orphanage.state }}</p>
+                        <p class="card-text">
+                            <strong>Capacity:</strong> {{ orphanage.current_occupancy }}/{{ orphanage.capacity }} children
+                        </p>
+                        <p class="card-text small">{{ orphanage.description[:100] if orphanage.description else 'N/A' }}...</p>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('donor.orphanage_detail', id=orphanage.id) }}" class="btn btn-sm btn-primary">View Details</a>
+                            <a href="{{ url_for('donor.donate', orphanage_id=orphanage.id) }}" class="btn btn-sm btn-success">Donate</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">No orphanages found.</div>
+    {% endif %}
+</div>
+
+<!-- Pagination -->
+{% if orphanages.pages > 1 %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if orphanages.has_prev %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('donor.view_orphanages', page=orphanages.prev_num) }}">Previous</a></li>
+            {% endif %}
+            
+            {% for page_num in orphanages.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num == orphanages.page %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('donor.view_orphanages', page=page_num) }}">{{ page_num }}</a></li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            
+            {% if orphanages.has_next %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('donor.view_orphanages', page=orphanages.next_num) }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+{% endblock %}

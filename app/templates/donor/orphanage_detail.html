@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ orphanage.name }} - Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2>{{ orphanage.name }}</h2>
+                <p class="text-muted">{{ orphanage.address }}, {{ orphanage.city }}, {{ orphanage.state }} {{ orphanage.postal_code }}</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Contact Information</h5>
+                        <p><strong>Phone:</strong> {{ orphanage.phone or 'N/A' }}</p>
+                        <p><strong>Email:</strong> {{ orphanage.email or 'N/A' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Capacity</h5>
+                        <p><strong>Occupancy:</strong> {{ orphanage.current_occupancy }} / {{ orphanage.capacity }} children</p>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: {{ (orphanage.current_occupancy / orphanage.capacity * 100) if orphanage.capacity else 0 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if orphanage.description %}
+                    <div class="mt-4">
+                        <h5>About</h5>
+                        <p>{{ orphanage.description }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Children in Care ({{ orphans|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% if orphans %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Health Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for orphan in orphans %}
+                                    {% set age = ((now.date() - orphan.date_of_birth).days // 365) %}
+                                    <tr>
+                                        <td>{{ orphan.name }}</td>
+                                        <td>{{ age }} years</td>
+                                        <td>{{ orphan.health_status or 'N/A' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No children records available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Make a Donation</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Your donation helps us care for these children.</p>
+                <a href="{{ url_for('donor.donate', orphanage_id=orphanage.id) }}" class="btn btn-success w-100">Donate Now</a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Donation Statistics</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Total Donations:</strong> ₹{{ "%.0f"|format(total_donations) }}</p>
+                <p><strong>Number of Donors:</strong> {{ donation_count }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block js %}
+<script>
+    var now = new Date();
+</script>
+{% endblock %}
+{% endblock %}

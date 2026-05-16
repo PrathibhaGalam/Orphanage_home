@@ -1,0 +1,89 @@
+/* Homepage styles */
+:root{
+  --primary:#146c8f;
+  --accent:#ff8a4c;
+  --muted:#6b6b6b;
+  --bg:#f5f7fa;
+  --card-bg:#ffffff;
+}
+html,body{height:100%;}
+body{font-family:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg);color:#111;line-height:1.45}
+.container{max-width:1100px;margin:0 auto;padding:0 18px}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+.brand{font-weight:700;color:var(--primary);text-decoration:none;font-size:1.25rem}
+.main-nav a{margin:0 10px;color:#334155;text-decoration:none;font-weight:600}
+.main-nav a:hover{color:var(--primary)}
+.actions .btn{margin-left:8px}
+
+/* hero uses .hero and .overlay from backgroundimg.css */
+.hero{display:flex;align-items:center;min-height:60vh}
+.hero-inner{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.hero-text{max-width:58%}
+.hero-text h1{font-size:1.9rem;margin-bottom:10px;font-weight:700}
+.hero-text p{color:var(--muted);font-size:1rem}
+.hero-search{display:flex;gap:10px;align-items:center;margin-top:14px}
+.hero-search input{padding:12px 14px;border-radius:10px;border:1px solid rgba(16,24,40,0.06);min-width:280px;background:#fff}
+.btn{padding:10px 14px;border-radius:10px;border:none;background:#fff;cursor:pointer;box-shadow:0 1px 0 rgba(16,24,40,0.02);display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:inherit}
+.btn.primary{background:var(--primary);color:#fff;box-shadow:0 6px 18px rgba(20,108,143,0.12)}
+.btn.ghost{background:transparent;border:1px solid rgba(16,24,40,0.06)}
+
+.intro{padding:30px 0}
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+.listings{padding:26px 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.card{background:var(--card-bg);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(15,23,42,0.06);display:flex;flex-direction:column;min-height:320px}
+.card img{width:100%;height:140px;object-fit:cover}
+.card-body{padding:16px;flex:1;display:flex;flex-direction:column}
+.card-body h3{margin:0 0 6px;font-size:1.05rem}
+.card-body .muted{color:var(--muted);font-size:0.88rem;margin-bottom:8px}
+.card-body .needs{font-size:0.95rem;margin-bottom:12px;color:#374151}
+.card-actions{display:flex;gap:10px;align-items:center;margin-top:auto}
+
+/* style anchor buttons inside cards */
+.card-actions a{display:inline-flex;text-decoration:none}
+.card-actions a.btn{min-width:84px}
+.card-actions a.btn.ghost{background:transparent;border:1px solid rgba(16,24,40,0.06);color:var(--primary)}
+.card-actions a.btn.primary{background:var(--primary);color:#fff}
+
+.site-footer{background:#0b1220;color:#fff;padding:18px 0;margin-top:30px}
+.footer-inner{display:flex;justify-content:space-between;align-items:center}
+.footer-nav a{color:#94a3b8;margin-left:12px;text-decoration:none}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;padding:20px}
+.modal.hidden{display:none}
+.modal-panel{background:#fff;width:100%;max-width:520px;border-radius:12px;padding:20px;position:relative}
+.modal-close{position:absolute;right:12px;top:8px;border:none;background:transparent;font-size:22px;cursor:pointer}
+.modal-panel input, .modal-panel select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(16,24,40,0.06);margin-top:6px;margin-bottom:8px}
+
+/* responsive */
+@media (max-width:900px){
+  .hero-inner{flex-direction:column;align-items:flex-start}
+  .hero-text{max-width:100%}
+  .hero-search input{min-width:120px;width:100%}
+  .intro-grid{grid-template-columns:1fr}
+  .footer-inner{flex-direction:column;gap:12px}
+}
+
+/* Ensure hero text is always readable over images */
+.overlay .hero-text h1,
+.overlay .hero-text p {
+  color: #fff !important;
+  text-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+/* Make hero search controls more prominent */
+.hero-search input{
+  background: rgba(255,255,255,0.96);
+  color: #0b1220;
+  border: 1px solid rgba(2,6,23,0.06);
+}
+.hero-search .btn{min-height:44px}
+.hero-search .btn.primary{background:var(--primary);color:#fff}
+
+@media (max-width:480px){
+  .brand{font-size:1rem}
+  .hero-text h1{font-size:1.4rem}
+  .card img{height:120px}
+}

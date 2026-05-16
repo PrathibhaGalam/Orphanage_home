@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orphanage Details — HelpNearby</title>
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="CSS/buttons.css" />
+    <link rel="stylesheet" href="CSS/backgroundimg.css" />
+    <link rel="stylesheet" href="CSS/homepage.css" />
+    <style>
+        #detailSection {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .detail-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .detail-header {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .detail-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .detail-header p {
+            font-size: 1rem;
+            opacity: 0.95;
+            margin: 8px 0;
+        }
+
+        .needs-section {
+            margin-bottom: 30px;
+        }
+
+        .needs-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .needs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .need-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .need-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .need-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .need-info {
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .need-info .label {
+            opacity: 0.8;
+        }
+
+        .need-info .value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .donation-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .donation-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .donation-input button {
+            padding: 8px 16px;
+            background: #ffd700;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .donation-input button:hover {
+            background: #ffed4e;
+        }
+
+        .donation-summary {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .donation-summary h3 {
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .summary-item .name {
+            font-weight: 500;
+        }
+
+        .summary-item .amount {
+            font-weight: bold;
+        }
+
+        .total-amount {
+            font-size: 1.3rem;
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+            margin-top: 15px;
+        }
+
+        .payment-methods {
+            margin-top: 20px;
+        }
+
+        .payment-methods h4 {
+            margin-bottom: 15px;
+        }
+
+        .method-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .method-btn {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .method-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .method-btn.selected {
+            background: #ffd700;
+            color: #333;
+            border-color: #ffd700;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+
+        .action-buttons button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .action-buttons .donate-btn {
+            background: #ffd700;
+            color: #333;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .action-buttons .donate-btn:hover {
+            background: #ffed4e;
+            transform: translateY(-2px);
+        }
+
+        .action-buttons .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .action-buttons .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="index.html">HelpNearby</a>
+            <nav class="main-nav">
+                <a href="about.html">About</a>
+                <a href="locations.html">Locations</a>
+                <a href="our-services.html">Services</a>
+                <a href="query.html">Contact</a>
+            </nav>
+            <div class="actions">
+                <button class="btn ghost" id="openLogin">Login</button>
+                <button class="btn primary" id="openRegister">Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="detailSection">
+            <div class="detail-container">
+                <div class="detail-header" id="detailHeader">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div class="needs-section">
+                    <h3>What They Need</h3>
+                    <div class="needs-grid" id="needsGrid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="donation-summary">
+                    <h3>Your Donation Summary</h3>
+                    <div id="summaryItems">
+                        <p style="opacity: 0.7;">No items added yet. Select items above to donate.</p>
+                    </div>
+                    <div class="total-amount">
+                        <span>Total Amount:</span>
+                        <span id="totalAmount">$0.00</span>
+                    </div>
+
+                    <div class="payment-methods">
+                        <h4>📳 Select Payment Method</h4>
+                        <div class="method-buttons">
+                            <button class="method-btn" data-method="credit">💳 Credit Card</button>
+                            <button class="method-btn" data-method="debit">💳 Debit Card</button>
+                            <button class="method-btn" data-method="upi">📱 UPI</button>
+                            <button class="method-btn" data-method="paypal">🅿️ PayPal</button>
+                        </div>
+                        <input type="hidden" id="selectedMethod" />
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="back-btn" onclick="history.back()">← Back</button>
+                        <button class="donate-btn" id="proceedPaymentBtn">Proceed to Payment</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; 2026 HelpNearby — Connecting Helpers with Homes</p>
+            <nav class="footer-nav">
+                <a href="about.html">About</a>
+                <a href="locations.html">Locations</a>
+                <a href="our-services.html">Services</a>
+                <a href="query.html">Contact</a>
+            </nav>
+        </div>
+    </footer>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-panel">
+            <button class="modal-close" id="closeModal">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="JS/main.js"></script>
+    <script>
+        const homeId = new URLSearchParams(window.location.search).get('id');
+        let currentHome = null;
+        let selectedDonations = {};
+        let selectedPaymentMethod = null;
+
+        function loadHomeDetails(){
+            const homes = JSON.parse(localStorage.getItem('hn_homes') || '[]');
+            currentHome = homes.find(h => h.id == homeId);
+            
+            if(!currentHome){
+                document.getElementById('detailSection').innerHTML = '<p style="text-align: center; padding: 40px;">Orphanage not found.</p>';
+                return;
+            }
+
+            // Header
+            document.getElementById('detailHeader').innerHTML = `
+                <h2>${currentHome.name}</h2>
+                <p><strong>📍 Location:</strong> ${currentHome.city}, ${currentHome.country}</p>
+                <p><strong>📧 Contact:</strong> ${currentHome.phone}</p>
+                <p><strong>📬 Address:</strong> ${currentHome.address}</p>
+            `;
+
+            // Needs
+            const needsGrid = document.getElementById('needsGrid');
+            needsGrid.innerHTML = '';
+
+            if(currentHome.structuredNeeds && currentHome.structuredNeeds.length > 0){
+                currentHome.structuredNeeds.forEach(need => {
+                    const needCard = document.createElement('div');
+                    needCard.className = 'need-card';
+                    needCard.id = 'need-' + need.id;
+                    needCard.innerHTML = `
+                        <h4>${getNeedEmoji(need.type)} ${need.type}</h4>
+                        <div class="need-info">
+                            <div class="label">Amount Needed:</div>
+                            <div class="value">${need.quantity} ${need.unit || ''}</div>
+                        </div>
+                        <div class="need-info">
+                            <div class="label">Cost per unit:</div>
+                            <div class="value">$${parseFloat(need.costPerUnit || 0).toFixed(2)}</div>
+                        </div>
+                        <div class="donation-input">
+                            <input type="number" placeholder="Amount ($)" min="0" step="0.01" class="donation-amount" data-need-id="${need.id}" />
+                            <button onclick="addToDonation('${need.id}', '${need.type}')">Add</button>
+                        </div>
+                    `;
+                    needsGrid.appendChild(needCard);
+                });
+            } else {
+                needsGrid.innerHTML += '<p>No specific needs listed yet.</p>';
+            }
+        }
+
+        function getNeedEmoji(type){
+            const emojis = {
+                'Food': '🍲', 'Clothes': '👕', 'Medicine': '💊', 'Books': '📚',
+                'Beds': '🛏️', 'Water': '💧', 'Education': '🎓', 'Toys': '🎮',
+                'Supplies': '📦', 'Other': '🎁'
+            };
+            return emojis[type] || '📦';
+        }
+
+        function addToDonation(needId, needType){
+            const input = document.querySelector(`input[data-need-id="${needId}"]`);
+            const amount = parseFloat(input.value);
+            
+            if(isNaN(amount) || amount <= 0){
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            if(!selectedDonations[needId]){
+                selectedDonations[needId] = { type: needType, amount: 0 };
+            }
+            selectedDonations[needId].amount += amount;
+            input.value = '';
+            updateSummary();
+        }
+
+        function updateSummary(){
+            const summaryDiv = document.getElementById('summaryItems');
+            const items = Object.entries(selectedDonations);
+
+            if(items.length === 0){
+                summaryDiv.innerHTML = '<p style="opacity: 0.7;">No items added yet. Select items above to donate.</p>';
+                document.getElementById('totalAmount').textContent = '$0.00';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+
+            items.forEach(([id, donation]) => {
+                const amount = parseFloat(donation.amount).toFixed(2);
+                html += `
+                    <div class="summary-item">
+                        <span class="name">${getNeedEmoji(donation.type)} ${donation.type}</span>
+                        <span class="amount">$${amount}</span>
+                    </div>
+                `;
+                total += parseFloat(amount);
+            });
+
+            summaryDiv.innerHTML = html;
+            document.getElementById('totalAmount').textContent = '$' + total.toFixed(2);
+        }
+
+        document.querySelectorAll('.method-btn').forEach(btn => {
+            btn.addEventListener('click', function(){
+                document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedPaymentMethod = this.dataset.method;
+                document.getElementById('selectedMethod').value = selectedPaymentMethod;
+            });
+        });
+
+        document.getElementById('proceedPaymentBtn').addEventListener('click', () => {
+            if(Object.keys(selectedDonations).length === 0){
+                alert('Please add items to donate');
+                return;
+            }
+            if(!selectedPaymentMethod){
+                alert('Please select a payment method');
+                return;
+            }
+
+            const totalAmount = Object.values(selectedDonations)
+                .reduce((sum, d) => sum + d.amount, 0)
+                .toFixed(2);
+
+            // Store donation and redirect to payment
+            sessionStorage.setItem('pendingDonation', JSON.stringify({
+                homeId: currentHome.id,
+                homeName: currentHome.name,
+                donations: selectedDonations,
+                totalAmount: totalAmount,
+                paymentMethod: selectedPaymentMethod
+            }));
+
+            // Simulate payment and redirect
+            window.location.href = 'payment.html';
+        });
+
+        window.addEventListener('load', loadHomeDetails);
+    </script>
+</body>
+</html>

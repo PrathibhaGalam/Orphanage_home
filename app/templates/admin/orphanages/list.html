@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Orphanages List - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Manage Orphanages</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('admin.create_orphanage') }}" class="btn btn-success">+ Add New Orphanage</a>
+    </div>
+</div>
+
+{% if orphanages %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>City, State</th>
+                    <th>Phone</th>
+                    <th>Capacity</th>
+                    <th>Occupancy</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for orphanage in orphanages %}
+                    <tr>
+                        <td><strong>{{ orphanage.name }}</strong></td>
+                        <td>{{ orphanage.city }}, {{ orphanage.state }}</td>
+                        <td>{{ orphanage.phone }}</td>
+                        <td>{{ orphanage.capacity }}</td>
+                        <td>{{ orphanage.current_occupancy }} / {{ orphanage.capacity }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.edit_orphanage', id=orphanage.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                            <form method="POST" action="{{ url_for('admin.delete_orphanage', id=orphanage.id) }}" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this orphanage?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        No orphanages found. <a href="{{ url_for('admin.create_orphanage') }}">Create the first one</a>
+    </div>
+{% endif %}
+{% endblock %}

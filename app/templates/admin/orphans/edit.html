@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Orphan Record - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="card-title mb-4">Edit Orphan Record</h3>
+                
+                <form method="POST" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ orphan.name }}" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="gender" class="form-label">Gender *</label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="male" {% if orphan.gender == 'male' %}selected{% endif %}>Male</option>
+                                <option value="female" {% if orphan.gender == 'female' %}selected{% endif %}>Female</option>
+                                <option value="other" {% if orphan.gender == 'other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="orphanage_id" class="form-label">Orphanage *</label>
+                            <select class="form-select" id="orphanage_id" name="orphanage_id" required>
+                                {% for o in orphanages %}
+                                    <option value="{{ o.id }}" {% if o.id == orphan.orphanage_id %}selected{% endif %}>{{ o.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="health_status" class="form-label">Health Status</label>
+                            <input type="text" class="form-control" id="health_status" name="health_status" value="{{ orphan.health_status or '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="education_level" class="form-label">Education Level</label>
+                        <input type="text" class="form-control" id="education_level" name="education_level" value="{{ orphan.education_level or '' }}">
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">Update Record</button>
+                        <a href="{{ url_for('admin.list_orphans') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Donor Dashboard - Orphanage Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Welcome, {{ current_user.username }}!</h2>
+    
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Donated</h5>
+                    <p class="card-text fs-4">₹{{ "%.0f"|format(stats.total_donated) }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Donations</h5>
+                    <p class="card-text fs-4">{{ stats.total_donations }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Orphanages</h5>
+                    <p class="card-text fs-4">{{ stats.orphanages_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="btn-group" role="group">
+                <a href="{{ url_for('donor.view_orphanages') }}" class="btn btn-primary">Browse Orphanages</a>
+                <a href="{{ url_for('donor.my_donations') }}" class="btn btn-primary">My Donations</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Donations -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Donations</h5>
+                </div>
+                <div class="card-body">
+                    {% if donations %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Orphanage</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for donation in donations[-5:] %}
+                                        <tr>
+                                            <td>{{ donation.orphanage.name }}</td>
+                                            <td>₹{{ donation.amount }}</td>
+                                            <td>{{ donation.donation_date.strftime('%B %d, %Y') }}</td>
+                                            <td>
+                                                <span class="badge bg-success">{{ donation.status.capitalize() }}</span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>No donations yet. <a href="{{ url_for('donor.view_orphanages') }}">Make your first donation</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

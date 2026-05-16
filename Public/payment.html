@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment & Receipt — HelpNearby</title>
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="CSS/buttons.css" />
+    <link rel="stylesheet" href="CSS/backgroundimg.css" />
+    <link rel="stylesheet" href="CSS/homepage.css" />
+    <style>
+        #paymentSection {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .payment-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .step-indicator {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            justify-content: center;
+        }
+
+        .step {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .step.active {
+            background: #ffd700;
+            color: #333;
+            transform: scale(1.1);
+        }
+
+        .step.completed {
+            background: rgba(76, 175, 80, 0.8);
+        }
+
+        .payment-form, .receipt {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+        }
+
+        .payment-form.active, .receipt.active {
+            display: block;
+        }
+
+        .payment-form h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .receipt {
+            text-align: center;
+        }
+
+        .receipt-header {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .receipt-content {
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .receipt-item.total {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-top: 10px;
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+            border-bottom: none;
+        }
+
+        .cashback-info {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .cashback-info .coins {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .receipt-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .receipt-actions button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .receipt-actions .btn-print {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .receipt-actions .btn-print:hover {
+            background: #ffed4e;
+        }
+
+        .receipt-actions .btn-home {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .receipt-actions .btn-home:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .payment-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .payment-buttons button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .payment-buttons .btn-cancel {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .payment-buttons .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .payment-buttons .btn-pay {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .payment-buttons .btn-pay:hover {
+            background: #ffed4e;
+        }
+
+        .payment-method-display {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: #333;
+            }
+            #paymentSection {
+                background: white;
+                color: #333;
+            }
+            .payment-form, .step-indicator, .receipt-actions {
+                display: none;
+            }
+            .receipt {
+                display: block;
+                background: none;
+                border: none;
+                backdrop-filter: none;
+                color: #333;
+            }
+            .receipt-content {
+                background: white;
+                border: 2px solid #333;
+                color: #333;
+            }
+            .receipt-item {
+                border-bottom: 1px solid #333;
+                color: #333;
+            }
+            .receipt-header {
+                color: #333;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="index.html">HelpNearby</a>
+            <nav class="main-nav">
+                <a href="about.html">About</a>
+                <a href="locations.html">Locations</a>
+                <a href="our-services.html">Services</a>
+                <a href="query.html">Contact</a>
+            </nav>
+            <div class="actions">
+                <span style="margin-right:12px" id="userDisplay"></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="paymentSection">
+            <div class="payment-container">
+                <!-- Step Indicator -->
+                <div class="step-indicator">
+                    <div class="step active" id="step1">1</div>
+                    <div class="step" id="step2">2</div>
+                </div>
+
+                <!-- Payment Form -->
+                <div class="payment-form active" id="paymentForm">
+                    <h2>💳 Complete Your Payment</h2>
+                    
+                    <div class="payment-method-display" id="methodDisplay"></div>
+
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="donorName" placeholder="Enter your full name" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="donorEmail" placeholder="Enter your email" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="donorPhone" placeholder="Enter your phone number" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Card/Account Number</label>
+                        <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Expiry</label>
+                            <input type="text" id="expiry" placeholder="MM/YY" required />
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="text" id="cvv" placeholder="***" required />
+                        </div>
+                    </div>
+
+                    <div id="orderSummary"></div>
+
+                    <div class="payment-buttons">
+                        <button class="btn-cancel" onclick="window.history.back()">Cancel</button>
+                        <button class="btn-pay" onclick="processPayment()">Pay Now</button>
+                    </div>
+                </div>
+
+                <!-- Receipt -->
+                <div class="receipt" id="receipt">
+                    <div class="receipt-header">✅ Thank You!</div>
+                    <p style="font-size: 1.2rem; margin-bottom: 25px;">Your donation has been received successfully</p>
+
+                    <div class="receipt-content" id="receiptContent"></div>
+
+                    <div class="cashback-info">
+                        <div class="coins">🎉 Cashback Earned!</div>
+                        <div id="cashbackDisplay"></div>
+                    </div>
+
+                    <div class="receipt-actions">
+                        <button class="btn-print" onclick="window.print()">🖨️ Print Receipt</button>
+                        <button class="btn-home" onclick="window.location.href='index.html'">Return Home</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; 2026 HelpNearby — Connecting Helpers with Homes</p>
+            <nav class="footer-nav">
+                <a href="about.html">About</a>
+                <a href="locations.html">Locations</a>
+                <a href="our-services.html">Services</a>
+                <a href="query.html">Contact</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script>
+        let pendingDonation = null;
+
+        function initiatePayment(){
+            const storedDonation = sessionStorage.getItem('pendingDonation');
+            if(!storedDonation){
+                window.location.href = 'index.html';
+                return;
+            }
+
+            pendingDonation = JSON.parse(storedDonation);
+
+            // Show payment method
+            const methodEmojis = {
+                'credit': '💳 Credit Card',
+                'debit': '💳 Debit Card',
+                'upi': '📱 UPI',
+                'paypal': '🅿️ PayPal'
+            };
+            document.getElementById('methodDisplay').innerHTML = 
+                `<strong>Payment Method:</strong> ${methodEmojis[pendingDonation.paymentMethod]}`;
+
+            // Show order summary
+            let summaryHtml = '<h3 style="margin-bottom: 15px;">📋 Order Summary</h3>';
+            Object.entries(pendingDonation.donations).forEach(([id, donation]) => {
+                summaryHtml += `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                        <span>${donation.type}</span>
+                        <span>$${donation.amount.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+            summaryHtml += `
+                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid rgba(255,255,255,0.3); margin-top: 10px; font-weight: bold; font-size: 1.1rem;">
+                    <span>Total:</span>
+                    <span>$${pendingDonation.totalAmount}</span>
+                </div>
+            `;
+            document.getElementById('orderSummary').innerHTML = summaryHtml;
+
+            // Pre-fill user info if logged in
+            const currentUser = localStorage.getItem('hn_current');
+            if(currentUser){
+                const users = JSON.parse(localStorage.getItem('hn_users') || '[]');
+                const user = users.find(u => u.email === currentUser);
+                if(user){
+                    document.getElementById('donorName').value = user.name;
+                    document.getElementById('donorEmail').value = user.email;
+                }
+            }
+        }
+
+        function processPayment(){
+            const name = document.getElementById('donorName').value.trim();
+            const email = document.getElementById('donorEmail').value.trim();
+            const phone = document.getElementById('donorPhone').value.trim();
+            const cardNum = document.getElementById('cardNumber').value.trim();
+            const expiry = document.getElementById('expiry').value.trim();
+            const cvv = document.getElementById('cvv').value.trim();
+
+            if(!name || !email || !phone || !cardNum || !expiry || !cvv){
+                alert('Please fill all required fields');
+                return;
+            }
+
+            // Simulate payment processing
+            document.getElementById('paymentForm').classList.remove('active');
+            document.getElementById('step1').classList.add('completed');
+            document.getElementById('step2').classList.add('active');
+            document.getElementById('receipt').classList.add('active');
+
+            // Generate receipt
+            generateReceipt(name, email);
+
+            // Clear session storage
+            sessionStorage.removeItem('pendingDonation');
+        }
+
+        function generateReceipt(donorName, donorEmail){
+            const timestamp = new Date().toLocaleString();
+            const receiptId = 'RCP-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            const cashbackPercentage = 0.05; // 5% cashback
+            const cashbackAmount = (parseFloat(pendingDonation.totalAmount) * cashbackPercentage).toFixed(2);
+
+            // Save donation to history
+            saveDonationHistory(donorName, receiptId, timestamp, cashbackAmount);
+
+            let receiptHtml = `
+                <div style="margin-bottom: 20px;">
+                    <strong>Receipt ID:</strong> ${receiptId}
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>Date & Time:</strong> ${timestamp}
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>Donor:</strong> ${donorName}
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>To:</strong> ${pendingDonation.homeName}
+                </div>
+                
+                <h4 style="margin-top: 20px;">Items Donated:</h4>
+            `;
+
+            Object.entries(pendingDonation.donations).forEach(([id, donation]) => {
+                receiptHtml += `
+                    <div class="receipt-item">
+                        <span>${donation.type}</span>
+                        <span>$${donation.amount.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            receiptHtml += `
+                <div class="receipt-item total">
+                    <span>Total Amount Donated:</span>
+                    <span>$${pendingDonation.totalAmount}</span>
+                </div>
+            `;
+
+            document.getElementById('receiptContent').innerHTML = receiptHtml;
+            document.getElementById('cashbackDisplay').innerHTML = `
+                You earned <strong>${cashbackAmount}</strong> coins (5% cashback)<br/>
+                <small>These coins can be used for future donations</small>
+            `;
+        }
+
+        function saveDonationHistory(donorName, receiptId, timestamp, cashback){
+            const history = JSON.parse(localStorage.getItem('hn_donations') || '[]');
+            history.push({
+                id: receiptId,
+                donor: donorName,
+                homeId: pendingDonation.homeId,
+                homeName: pendingDonation.homeName,
+                amount: pendingDonation.totalAmount,
+                cashback: cashback,
+                date: timestamp,
+                donations: pendingDonation.donations
+            });
+            localStorage.setItem('hn_donations', JSON.stringify(history));
+
+            // Add cashback to user account
+            const currentUser = localStorage.getItem('hn_current');
+            if(currentUser){
+                const users = JSON.parse(localStorage.getItem('hn_users') || '[]');
+                const userIndex = users.findIndex(u => u.email === currentUser);
+                if(userIndex !== -1){
+                    users[userIndex].cashback = (parseFloat(users[userIndex].cashback || 0) + parseFloat(cashback)).toFixed(2);
+                    localStorage.setItem('hn_users', JSON.stringify(users));
+                }
+            }
+        }
+
+        window.addEventListener('load', initiatePayment);
+    </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Orphanage Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Admin Dashboard</h2>
+    
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Orphanages</h5>
+                    <p class="card-text fs-4">{{ stats.orphanages }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Orphans</h5>
+                    <p class="card-text fs-4">{{ stats.orphans }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Donations</h5>
+                    <p class="card-text fs-4">₹{{ "%.0f"|format(stats.donations) }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Staff</h5>
+                    <p class="card-text fs-4">{{ stats.staff }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="btn-group" role="group">
+                <a href="{{ url_for('admin.list_orphanages') }}" class="btn btn-primary">Manage Orphanages</a>
+                <a href="{{ url_for('admin.list_orphans') }}" class="btn btn-primary">Manage Orphans</a>
+                <a href="{{ url_for('admin.list_donations') }}" class="btn btn-primary">View Donations</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Orphanages -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Orphanages</h5>
+                </div>
+                <div class="card-body">
+                    {% if orphanages %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>City</th>
+                                        <th>Capacity</th>
+                                        <th>Current Occupancy</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for orphanage in orphanages[:5] %}
+                                        <tr>
+                                            <td>{{ orphanage.name }}</td>
+                                            <td>{{ orphanage.city }}</td>
+                                            <td>{{ orphanage.capacity }}</td>
+                                            <td>{{ orphanage.current_occupancy }}</td>
+                                            <td>
+                                                <a href="{{ url_for('admin.edit_orphanage', id=orphanage.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                                <form method="POST" action="{{ url_for('admin.delete_orphanage', id=orphanage.id) }}" style="display:inline;">
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>No orphanages found. <a href="{{ url_for('admin.create_orphanage') }}">Create one</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

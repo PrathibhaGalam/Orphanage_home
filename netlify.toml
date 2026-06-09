@@ -1,0 +1,19 @@
+[build]
+  publish = "Public"
+
+[[redirects]]
+  from = "/api/orphanages/:id"
+  to = "/.netlify/functions/orphanages?id=:id"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/orphanages"
+  to = "/.netlify/functions/orphanages"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -352,12 +352,31 @@ function loadAllHomesOnMap(){
   }
 }
 
+const FALLBACK_HOMES = [
+  { id: 1, name: 'Sunshine Orphanage', city: 'Hyderabad', country: 'Telangana', needs: 'Food, Education, Clothes', lat: 17.4126, lng: 78.4071, distance: 2.5, images: [] },
+  { id: 2, name: "Rainbow Children's Home", city: 'Mumbai', country: 'Maharashtra', needs: 'Medicine, Books, Beds', lat: 19.1136, lng: 72.8697, distance: 5.1, images: [] },
+  { id: 3, name: 'Hope Old Age Home', city: 'Bangalore', country: 'Karnataka', needs: 'Medicine, Food, Supplies', lat: 12.9784, lng: 77.6408, distance: 8.3, images: [] },
+  { id: 4, name: 'Grace Orphanage Trust', city: 'Chennai', country: 'Tamil Nadu', needs: 'Education, Clothes, Supplies', lat: 13.0418, lng: 80.2341, distance: 12, images: [] },
+  { id: 5, name: 'Little Stars Orphanage', city: 'Jaipur', country: 'Rajasthan', needs: 'Food, Water, Books', lat: 26.9124, lng: 75.7873, distance: 15, images: [] },
+  { id: 6, name: 'Shanti Old Age Ashram', city: 'New Delhi', country: 'Delhi', needs: 'Medicine, Beds, Clothes', lat: 28.5921, lng: 77.0460, distance: 18.7, images: [] }
+];
+
+function renderHomes(homes){
+  currentHomes = homes;
+  if(cardsEl) cardsEl.innerHTML = '';
+  currentHomes.forEach(home => addCard(home));
+  loadAllHomesOnMap();
+}
+
 function loadOrphanagesFromBackend(){
   fetch('/api/orphanages')
-    .then(res => res.json())
+    .then(res => {
+      if(!res.ok) throw new Error('API unavailable');
+      return res.json();
+    })
     .then(result => {
-      if(result.success && Array.isArray(result.data)){
-        currentHomes = result.data.map(o => ({
+      if(result.success && Array.isArray(result.data) && result.data.length > 0){
+        const homes = result.data.map(o => ({
           id: o.id,
           name: o.name,
           city: o.city || '',
@@ -366,16 +385,14 @@ function loadOrphanagesFromBackend(){
           lat: o.latitude,
           lng: o.longitude,
           distance: o.distance || '',
-          images: []
+          images: o.images || []
         }));
-        if(cardsEl) cardsEl.innerHTML = '';
-        currentHomes.forEach(home => addCard(home));
-        loadAllHomesOnMap();
+        renderHomes(homes);
       } else {
-        console.error('API response error', result);
+        renderHomes(FALLBACK_HOMES);
       }
     })
-    .catch(err => console.error('Failed to load orphanages from backend', err));
+    .catch(() => renderHomes(FALLBACK_HOMES));
 }
 
 // Initialize map when page loads

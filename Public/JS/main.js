@@ -313,10 +313,22 @@ function openHomeRegisterHandler(){
       return new Promise(res=>{ const r = new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); });
     });
     Promise.all(readers).then(images=>{
-      const homes = getHomes();
-      const home = { id: Date.now(), name, address, city, country, lat, lng, phone, needs, structuredNeeds, images, distance: 0 };
-      homes.push(home); saveHomes(homes); addCard(home); addMarkerToMap(home); hideModal(); alert('Home registered — thank you!');
-    }).catch(()=>{ alert('Error reading files'); });
+      return fetch('/api/orphanages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, address, city, state: country, phone, latitude: lat, longitude: lng, needs, structured_needs: structuredNeeds })
+      })
+      .then(res => res.json())
+      .then(result => {
+        if(result.success){
+          const home = { id: result.data.id, name, address, city, country, lat, lng, phone, needs, structuredNeeds, images, distance: 0 };
+          const homes = getHomes(); homes.push(home); saveHomes(homes);
+          addCard(home); addMarkerToMap(home); hideModal(); alert('Home registered — thank you!');
+        } else {
+          alert('Registration failed: ' + (result.error || 'Unknown error'));
+        }
+      });
+    }).catch(()=>{ alert('Error submitting registration'); });
   });
 }
 

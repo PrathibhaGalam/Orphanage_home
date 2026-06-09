@@ -319,22 +319,6 @@ function openHomeRegisterHandler(){
     }).catch(()=>{ alert('Error reading files'); });
   });
 }
-    const city = document.getElementById('homeCity').value.trim();
-    const phone = document.getElementById('homePhone').value.trim();
-    const needs = document.getElementById('homeNeeds').value.trim();
-    const files = Array.from(document.getElementById('homePhotos').files).slice(0,4);
-    if(!name||!city){ alert('Please provide name and city'); return; }
-    // read files and save dataURLs
-    const readers = files.map(f=>{
-      return new Promise(res=>{ const r = new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); });
-    });
-    Promise.all(readers).then(images=>{
-      const homes = getHomes();
-      const home = { id: Date.now(), name, address, city, phone, needs, images };
-      homes.push(home); saveHomes(homes); addCard(home); hideModal(); alert('Home registered — thank you!');
-    }).catch(()=>{ alert('Error reading files'); });
-  });
-}
 
 // load saved homes and render
 let map; // global map instance
@@ -353,42 +337,51 @@ function addMarkerToMap(home){
   const popupText = `<strong>${home.name}</strong><br/>${home.city}, ${home.country}<br/><small>${home.needs}</small>`;
   marker.bindPopup(popupText);
 }
+let currentHomes = [];
+
 function loadAllHomesOnMap(){
   const saved = getHomes();
-  if(saved && saved.length){
-    saved.forEach(h=>{
-      if(h.lat && h.lng) addMarkerToMap(h);
-    });
-    // Fit bounds if homes exist
-    if(saved.some(h=>h.lat && h.lng)){
-      const bounds = L.latLngBounds(saved.filter(h=>h.lat && h.lng).map(h=>[h.lat, h.lng]));
-      if(map && bounds.isValid()) map.fitBounds(bounds.pad(0.1));
-    }
+  const allHomes = [
+    ...currentHomes.filter(h=>h && h.lat && h.lng),
+    ...(saved || []).filter(h=>h && h.lat && h.lng)
+  ];
+  if(allHomes.length){
+    allHomes.forEach(h=> addMarkerToMap(h));
+    const bounds = L.latLngBounds(allHomes.map(h=>[h.lat, h.lng]));
+    if(map && bounds.isValid()) map.fitBounds(bounds.pad(0.1));
   }
 }
 
-// Add sample homes if storage is empty (for demo)
-function initializeSampleHomes(){
-  const saved = getHomes();
-  if(!saved || saved.length === 0){
-    const samples = [
-      { id: 1, name: 'Sunrise Orphanage', address: '123 Park Ave', city: 'New York', country: 'USA', lat: 40.7128, lng: -74.0060, phone: '+1-555-0101', needs: 'Food, Clothes, Books', structuredNeeds: [{id: 1.1, type: 'Food', quantity: 500, unit: 'kg', costPerUnit: 2.50}, {id: 1.2, type: 'Clothes', quantity: 100, unit: 'pieces', costPerUnit: 15}, {id: 1.3, type: 'Books', quantity: 200, unit: 'pieces', costPerUnit: 8}], images: [] },
-      { id: 2, name: 'Riverside Care Home', address: '456 Thames St', city: 'London', country: 'UK', lat: 51.5074, lng: -0.1278, phone: '+44-20-7946', needs: 'Beds, Medicine, Water', structuredNeeds: [{id: 2.1, type: 'Beds', quantity: 20, unit: 'pieces', costPerUnit: 300}, {id: 2.2, type: 'Medicine', quantity: 50, unit: 'boxes', costPerUnit: 25}, {id: 2.3, type: 'Water', quantity: 5000, unit: 'liters', costPerUnit: 0.50}], images: [] },
-      { id: 3, name: "Hope Children's Home", address: '789 Marine Drive', city: 'Mumbai', country: 'India', lat: 19.0760, lng: 72.8777, phone: '+91-22-1234', needs: 'Food, Education, Supplies', structuredNeeds: [{id: 3.1, type: 'Food', quantity: 1000, unit: 'kg', costPerUnit: 1.50}, {id: 3.2, type: 'Education', quantity: 50, unit: 'courses', costPerUnit: 100}, {id: 3.3, type: 'Supplies', quantity: 500, unit: 'items', costPerUnit: 5}], images: [] },
-      { id: 4, name: 'Peace Sanctuary', address: '321 Rue de la Paix', city: 'Paris', country: 'France', lat: 48.8566, lng: 2.3522, phone: '+33-1-2345', needs: 'Clothes, Medicine, Books', structuredNeeds: [{id: 4.1, type: 'Clothes', quantity: 150, unit: 'pieces', costPerUnit: 20}, {id: 4.2, type: 'Medicine', quantity: 100, unit: 'boxes', costPerUnit: 30}, {id: 4.3, type: 'Books', quantity: 300, unit: 'pieces', costPerUnit: 10}], images: [] },
-      { id: 5, name: 'Golden Hearts', address: '654 Alexanderplatz', city: 'Berlin', country: 'Germany', lat: 52.5200, lng: 13.4050, phone: '+49-30-1234', needs: 'Food, Beds, Medicine', structuredNeeds: [{id: 5.1, type: 'Food', quantity: 800, unit: 'kg', costPerUnit: 2.20}, {id: 5.2, type: 'Beds', quantity: 15, unit: 'pieces', costPerUnit: 350}, {id: 5.3, type: 'Medicine', quantity: 200, unit: 'boxes', costPerUnit: 20}], images: [] }
-    ];
-    saveHomes(samples);
-  }
+function loadOrphanagesFromBackend(){
+  fetch('/api/orphanages')
+    .then(res => res.json())
+    .then(result => {
+      if(result.success && Array.isArray(result.data)){
+        currentHomes = result.data.map(o => ({
+          id: o.id,
+          name: o.name,
+          city: o.city || '',
+          country: o.state || '',
+          needs: o.needs || 'Needs available on details',
+          lat: o.latitude,
+          lng: o.longitude,
+          distance: o.distance || '',
+          images: []
+        }));
+        if(cardsEl) cardsEl.innerHTML = '';
+        currentHomes.forEach(home => addCard(home));
+        loadAllHomesOnMap();
+      } else {
+        console.error('API response error', result);
+      }
+    })
+    .catch(err => console.error('Failed to load orphanages from backend', err));
 }
-
-initializeSampleHomes();
-const saved = getHomes(); if(saved && saved.length){ saved.forEach(h=>addCard(h)); }
 
 // Initialize map when page loads
 window.addEventListener('load', ()=>{
   initializeMap();
-  loadAllHomesOnMap();
+  loadOrphanagesFromBackend();
 });
 
 // show user status on load

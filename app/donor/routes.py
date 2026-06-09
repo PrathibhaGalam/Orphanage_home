@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, current_app
 from flask_login import login_required, current_user
 from database.models import db, Orphanage, Donation, Orphan
+from app.notifications import notify_donation_slip
 from datetime import datetime
 
 donor_bp = Blueprint('donor', __name__)
@@ -73,13 +74,19 @@ def donate(orphanage_id):
             donation_type=donation_type,
             description=description,
             payment_method=payment_method,
-            status='completed'
+            status='completed',
+            donor_email=current_user.email,
+            donor_phone=current_user.phone
         )
         
         try:
             db.session.add(donation)
             db.session.commit()
-            flash('Thank you for your donation!', 'success')
+            try:
+                notify_donation_slip(donation)
+            except Exception as notify_error:
+                current_app.logger.warning(f'Notification failure: {notify_error}')
+            flash('Thank you for your donation! A receipt slip has been triggered to your email and phone.', 'success')
             return redirect(url_for('donor.dashboard'))
         except Exception as e:
             db.session.rollback()

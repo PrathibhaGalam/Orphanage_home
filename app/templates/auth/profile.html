@@ -20,6 +20,11 @@
                 </div>
                 
                 <div class="mb-3">
+                    <label class="form-label"><strong>Phone:</strong></label>
+                    <p>{{ user.phone or 'Not provided' }}</p>
+                </div>
+                
+                <div class="mb-3">
                     <label class="form-label"><strong>Role:</strong></label>
                     <p>{{ user.role.capitalize() }}</p>
                 </div>

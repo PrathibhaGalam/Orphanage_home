@@ -11,12 +11,13 @@ def register():
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
+        phone = request.form.get('phone')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
         role = request.form.get('role', 'donor')
         
         # Validation
-        if not username or not email or not password:
+        if not username or not email or not password or not phone:
             flash('All fields are required!', 'danger')
             return redirect(url_for('auth.register'))
         
@@ -33,7 +34,7 @@ def register():
             return redirect(url_for('auth.register'))
         
         # Create new user
-        user = User(username=username, email=email, role=role)
+        user = User(username=username, email=email, phone=phone, role=role)
         user.set_password(password)
         
         db.session.add(user)

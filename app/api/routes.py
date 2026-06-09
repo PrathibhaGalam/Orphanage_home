@@ -1,7 +1,9 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from flask_login import login_required, current_user
 from database.models import Orphanage, Orphan, Donation
+from app.notifications import notify_donation_slip
 from functools import wraps
+from datetime import datetime
 
 api_bp = Blueprint('api', __name__)
 
@@ -111,11 +113,17 @@ def create_donation():
             donation_type=data.get('type', 'monetary'),
             description=data.get('description'),
             payment_method=data.get('payment_method'),
-            status='completed'
+            status='completed',
+            donor_email=current_user.email,
+            donor_phone=current_user.phone
         )
         
         db.session.add(donation)
         db.session.commit()
+        try:
+            notify_donation_slip(donation)
+        except Exception as notify_error:
+            current_app.logger.warning(f'Notification failure: {notify_error}')
         
         return jsonify({
             'success': True,

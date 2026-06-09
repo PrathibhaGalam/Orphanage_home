@@ -16,14 +16,15 @@ body{font-family:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, s
 .actions .btn{margin-left:8px}
 
 /* hero uses .hero and .overlay from backgroundimg.css */
-.hero{display:flex;align-items:center;min-height:60vh}
-.hero-inner{display:flex;align-items:center;justify-content:space-between;gap:20px}
-.hero-text{max-width:58%}
+.hero{display:flex;align-items:center;min-height:90vh;height:auto}
+.hero-inner{display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-start;gap:20px;position:relative;padding:40px 0}
+.hero-text{max-width:45%;width:100%;text-align:right}
 .hero-text h1{font-size:1.9rem;margin-bottom:10px;font-weight:700}
+.hero-search{align-self:flex-end;margin-top:18px;justify-content:flex-end}
 .hero-text p{color:var(--muted);font-size:1rem}
-.hero-search{display:flex;gap:10px;align-items:center;margin-top:14px}
-.hero-search input{padding:12px 14px;border-radius:10px;border:1px solid rgba(16,24,40,0.06);min-width:280px;background:#fff}
-.btn{padding:10px 14px;border-radius:10px;border:none;background:#fff;cursor:pointer;box-shadow:0 1px 0 rgba(16,24,40,0.02);display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:inherit}
+.hero-search{display:flex;gap:16px;align-items:center;margin-top:18px}
+.hero-search input{padding:16px 20px;border-radius:14px;border:1px solid rgba(16,24,40,0.08);min-width:320px;font-size:1rem;background:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.08)}
+.btn{padding:14px 22px;border-radius:14px;border:none;background:#fff;cursor:pointer;box-shadow:0 3px 12px rgba(16,24,40,0.08);display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:inherit;font-size:1rem}
 .btn.primary{background:var(--primary);color:#fff;box-shadow:0 6px 18px rgba(20,108,143,0.12)}
 .btn.ghost{background:transparent;border:1px solid rgba(16,24,40,0.06)}
 
@@ -60,10 +61,17 @@ body{font-family:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, s
 /* responsive */
 @media (max-width:900px){
   .hero-inner{flex-direction:column;align-items:flex-start}
-  .hero-text{max-width:100%}
+  .hero-text{max-width:100%;text-align:left}
+  .hero-search{width:100%;justify-content:flex-start}
   .hero-search input{min-width:120px;width:100%}
   .intro-grid{grid-template-columns:1fr}
   .footer-inner{flex-direction:column;gap:12px}
+}
+
+@media (min-width:901px){
+  .hero-search{position:static;right:auto;top:auto;transform:none;margin-top:18px;max-width:520px;width:100%;justify-content:flex-end}
+  .hero-search input{min-width:320px;max-width:340px}
+  .hero-search .btn{min-width:160px}
 }
 
 /* Ensure hero text is always readable over images */

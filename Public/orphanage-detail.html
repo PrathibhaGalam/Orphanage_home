@@ -327,52 +327,86 @@
         let selectedDonations = {};
         let selectedPaymentMethod = null;
 
-        function loadHomeDetails(){
-            const homes = JSON.parse(localStorage.getItem('hn_homes') || '[]');
-            currentHome = homes.find(h => h.id == homeId);
-            
+        function renderHomeDetails(){
             if(!currentHome){
                 document.getElementById('detailSection').innerHTML = '<p style="text-align: center; padding: 40px;">Orphanage not found.</p>';
                 return;
             }
 
-            // Header
             document.getElementById('detailHeader').innerHTML = `
                 <h2>${currentHome.name}</h2>
-                <p><strong>📍 Location:</strong> ${currentHome.city}, ${currentHome.country}</p>
-                <p><strong>📧 Contact:</strong> ${currentHome.phone}</p>
-                <p><strong>📬 Address:</strong> ${currentHome.address}</p>
+                <p><strong>📍 Location:</strong> ${currentHome.city || 'Unknown'}, ${currentHome.country || ''}</p>
+                <p><strong>📧 Contact:</strong> ${currentHome.phone || currentHome.email || 'N/A'}</p>
+                <p><strong>📬 Address:</strong> ${currentHome.address || 'No address available'}</p>
             `;
 
-            // Needs
             const needsGrid = document.getElementById('needsGrid');
             needsGrid.innerHTML = '';
 
-            if(currentHome.structuredNeeds && currentHome.structuredNeeds.length > 0){
-                currentHome.structuredNeeds.forEach(need => {
-                    const needCard = document.createElement('div');
-                    needCard.className = 'need-card';
-                    needCard.id = 'need-' + need.id;
-                    needCard.innerHTML = `
-                        <h4>${getNeedEmoji(need.type)} ${need.type}</h4>
-                        <div class="need-info">
-                            <div class="label">Amount Needed:</div>
-                            <div class="value">${need.quantity} ${need.unit || ''}</div>
-                        </div>
-                        <div class="need-info">
-                            <div class="label">Cost per unit:</div>
-                            <div class="value">$${parseFloat(need.costPerUnit || 0).toFixed(2)}</div>
-                        </div>
-                        <div class="donation-input">
-                            <input type="number" placeholder="Amount ($)" min="0" step="0.01" class="donation-amount" data-need-id="${need.id}" />
-                            <button onclick="addToDonation('${need.id}', '${need.type}')">Add</button>
-                        </div>
-                    `;
-                    needsGrid.appendChild(needCard);
-                });
-            } else {
-                needsGrid.innerHTML += '<p>No specific needs listed yet.</p>';
+            const defaultNeeds = [
+                { id: 1, type: 'Food', emoji: '🍲' },
+                { id: 2, type: 'Clothes', emoji: '👕' },
+                { id: 3, type: 'Medicine', emoji: '💊' },
+                { id: 4, type: 'Education', emoji: '🎓' }
+            ];
+
+            defaultNeeds.forEach(need => {
+                const needCard = document.createElement('div');
+                needCard.className = 'need-card';
+                needCard.id = 'need-' + need.id;
+                needCard.innerHTML = `
+                    <h4>${need.emoji} ${need.type}</h4>
+                    <div class="need-info">
+                        <div class="label">Donate for:</div>
+                        <div class="value">${need.type}</div>
+                    </div>
+                    <div class="donation-input">
+                        <input type="number" placeholder="Amount ($)" min="0" step="0.01" class="donation-amount" data-need-id="${need.id}" />
+                        <button onclick="addToDonation('${need.id}', '${need.type}')">Add</button>
+                    </div>
+                `;
+                needsGrid.appendChild(needCard);
+            });
+        }
+
+        function loadHomeDetails(){
+            const homes = JSON.parse(localStorage.getItem('hn_homes') || '[]');
+            currentHome = homes.find(h => h.id == homeId);
+
+            if(currentHome){
+                renderHomeDetails();
+                return;
             }
+
+            if(!homeId){
+                renderHomeDetails();
+                return;
+            }
+
+            fetch(`/api/orphanages/${encodeURIComponent(homeId)}`)
+                .then(response => {
+                    if(!response.ok) throw new Error('Orphanage not found');
+                    return response.json();
+                })
+                .then(data => {
+                    if(data.success && data.data){
+                        currentHome = {
+                            id: data.data.id,
+                            name: data.data.name,
+                            address: data.data.address || '',
+                            city: data.data.city || '',
+                            country: data.data.state || '',
+                            phone: data.data.phone || '',
+                            email: data.data.email || ''
+                        };
+                        renderHomeDetails();
+                    } else {
+                        throw new Error('Orphanage not found');
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('detailSection').innerHTML = '<p style="text-align: center; padding: 40px;">Orphanage not found.</p>';
+                });
         }
 
         function getNeedEmoji(type){

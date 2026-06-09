@@ -35,6 +35,14 @@ def dashboard():
     
     return render_template('admin/dashboard.html', stats=stats, orphanages=orphanages)
 
+@admin_bp.route('/users')
+@login_required
+@admin_required
+def list_users():
+    """List all registered users"""
+    users = User.query.all()
+    return render_template('admin/users/list.html', users=users)
+
 # ==================== ORPHANAGE MANAGEMENT ====================
 
 @admin_bp.route('/orphanages')

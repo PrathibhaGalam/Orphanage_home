@@ -12,6 +12,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    phone = db.Column(db.String(15))
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='donor')  # admin, staff, donor
     is_active = db.Column(db.Boolean, default=True)
@@ -112,6 +113,8 @@ class Donation(db.Model):
     transaction_id = db.Column(db.String(100), unique=True)
     status = db.Column(db.String(20), default='completed')  # pending, completed, failed
     receipt_issued = db.Column(db.Boolean, default=False)
+    donor_email = db.Column(db.String(120))
+    donor_phone = db.Column(db.String(15))
     notes = db.Column(db.Text)
     
     # Relationships

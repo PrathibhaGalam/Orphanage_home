@@ -95,6 +95,25 @@
         let markers = {}; // Store markers by home id
         let allHomes = [];
         
+        function addHomeMarker(home){
+            if(!home.lat && !home.latitude) return;
+            const lat = home.lat || home.latitude;
+            const lng = home.lng || home.longitude;
+            const country = home.country || home.state || '';
+            const marker = L.marker([lat, lng]).addTo(map);
+            const popupText = `<strong>${home.name}</strong><br/>${home.city}, ${country}<br/><small><strong>Needs:</strong> ${home.needs}</small><br/><small><strong>Phone:</strong> ${home.phone||''}</small>`;
+            marker.bindPopup(popupText);
+            markers[home.id] = marker;
+        }
+
+        function fitBoundsToHomes(){
+            const validHomes = allHomes.filter(h => (h.lat||h.latitude) && (h.lng||h.longitude));
+            if(validHomes.length > 0){
+                const bounds = L.latLngBounds(validHomes.map(h => [h.lat||h.latitude, h.lng||h.longitude]));
+                if(bounds.isValid() && map) map.fitBounds(bounds.pad(0.1));
+            }
+        }
+
         function initLocationMap(){
             if(document.getElementById('map')){
                 map = L.map('map').setView([20, 0], 2);
@@ -102,24 +121,24 @@
                     attribution: '© OpenStreetMap contributors',
                     maxZoom: 19
                 }).addTo(map);
-                
-                // Load homes from storage and add markers
-                allHomes = JSON.parse(localStorage.getItem('hn_homes') || '[]');
-                allHomes.forEach(home => {
-                    if(home.lat && home.lng){
-                        const marker = L.marker([home.lat, home.lng]).addTo(map);
-                        const popupText = `<strong>${home.name}</strong><br/>${home.city}, ${home.country}<br/><small><strong>Needs:</strong> ${home.needs}</small><br/><small><strong>Phone:</strong> ${home.phone}</small>`;
-                        marker.bindPopup(popupText);
-                        markers[home.id] = marker;
-                    }
-                });
-                
-                // Fit bounds if homes exist
-                const validHomes = allHomes.filter(h => h.lat && h.lng);
-                if(validHomes.length > 0){
-                    const bounds = L.latLngBounds(validHomes.map(h => [h.lat, h.lng]));
-                    if(bounds.isValid()) map.fitBounds(bounds.pad(0.1));
-                }
+
+                // Load from backend API first, then merge localStorage
+                fetch('/api/orphanages')
+                    .then(res => res.json())
+                    .then(result => {
+                        if(result.success && Array.isArray(result.data)){
+                            allHomes = result.data;
+                        }
+                    })
+                    .catch(() => {})
+                    .finally(() => {
+                        // Merge localStorage homes not already in allHomes
+                        const localHomes = JSON.parse(localStorage.getItem('hn_homes') || '[]');
+                        const ids = new Set(allHomes.map(h => String(h.id)));
+                        localHomes.forEach(h => { if(!ids.has(String(h.id))) allHomes.push(h); });
+                        allHomes.forEach(home => addHomeMarker(home));
+                        fitBoundsToHomes();
+                    });
             }
         }
         
@@ -129,9 +148,9 @@
             if(query === ''){
                 // Show all markers
                 Object.keys(markers).forEach(id => markers[id].setOpacity(1));
-                const validHomes = allHomes.filter(h => h.lat && h.lng);
+                const validHomes = allHomes.filter(h => (h.lat||h.latitude) && (h.lng||h.longitude));
                 if(validHomes.length > 0){
-                    const bounds = L.latLngBounds(validHomes.map(h => [h.lat, h.lng]));
+                    const bounds = L.latLngBounds(validHomes.map(h => [h.lat||h.latitude, h.lng||h.longitude]));
                     if(bounds.isValid() && map) map.fitBounds(bounds.pad(0.1));
                 }
                 return;
@@ -155,9 +174,9 @@
             
             // Fit bounds to matching locations
             if(filteredHomes.length > 0){
-                const validFiltered = filteredHomes.filter(h => h.lat && h.lng);
+                const validFiltered = filteredHomes.filter(h => (h.lat||h.latitude) && (h.lng||h.longitude));
                 if(validFiltered.length > 0){
-                    const bounds = L.latLngBounds(validFiltered.map(h => [h.lat, h.lng]));
+                    const bounds = L.latLngBounds(validFiltered.map(h => [h.lat||h.latitude, h.lng||h.longitude]));
                     if(bounds.isValid() && map) map.fitBounds(bounds.pad(0.2));
                 }
             }
